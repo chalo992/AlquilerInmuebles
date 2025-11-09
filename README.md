@@ -13,6 +13,8 @@ Arquitectura: Hexagonal Architecture
 
 
 ## 📁 Estructura del proyecto
+
+```bash
 AlquilerInmuebles/
 │
 ├── .env

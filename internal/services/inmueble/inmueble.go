@@ -6,6 +6,7 @@ import (
 	"AlquilerInmuebles/internal/services/common"
 	"fmt"
 	"mime/multipart"
+	"os"
 	"path/filepath"
 	"strconv"
 	"time"
@@ -96,6 +97,9 @@ func (i *ServiceInmueble) EliminarInmueble(id string) ([]string, error) {
 	}
 
 	inmueble, err := i.Repo.GetInmuebleIdConReservasImagenes(uint(idInt))
+	if err != nil {
+		return nil, err
+	}
 
 	for _, reserva := range inmueble.Reservas {
 		if reserva.Activa {
@@ -107,8 +111,8 @@ func (i *ServiceInmueble) EliminarInmueble(id string) ([]string, error) {
 
 	var paths []string
 	for _, imagen := range inmueble.Imagenes {
-		paths = append(paths, fmt.Sprintf("path/carpeta/inmuebleImagenes\\%s", imagen.PathLocal))
-	} //el string debe ser el path a la carpeta donde se guardan localmente las imagenes de los inmuebles
+		paths = append(paths, imagen.PathLocal)
+	}
 
 	err = i.Repo.Eliminar(uint(idInt))
 	if err != nil {
@@ -198,8 +202,6 @@ func (i *ServiceInmueble) BuscarInmuebleLocalidadYFechas(localidad, fechaini, fe
 
 	for _, inmueble := range inmueblesLista {
 		for idx := range inmueble.Imagenes {
-			// Si en BD tenés "/static/imagenesInmuebles/xxxx.jpg"
-			// entonces concatenás el host
 			inmueble.Imagenes[idx].Url = services.BaseUrl + inmueble.Imagenes[idx].Url
 		}
 	}
@@ -211,8 +213,12 @@ func (i *ServiceInmueble) GenerarPathImagen(file *multipart.FileHeader) (string,
 	timestamp := time.Now().Format("20060102150405")
 	imagenName := fmt.Sprintf("%s_%s", timestamp, file.Filename)
 
-	// Ruta absoluta hacia la carpeta go/imagenesInmuebles
-	saveDir := filepath.Join("path/carpeta/inmuebleImagenes", "imagenesInmuebles")
+	saveDir := "imagenesInmuebles"
+
+	// Crear la carpeta si no existe
+	if err := os.MkdirAll(saveDir, os.ModePerm); err != nil {
+		return "", "", err
+	}
 
 	savePath := filepath.Join(saveDir, imagenName)
 
@@ -240,21 +246,28 @@ func (i *ServiceInmueble) CargarImagenInmueble(imagenName, idInmueble string) er
 	return nil
 }
 
-func (i *ServiceInmueble) EliminarImagen(id string) (string, error) {
+func (i *ServiceInmueble) EliminarImagen(id string) error {
 
 	idInt, err := strconv.Atoi(id)
 	if err != nil {
-		return "", err
+		return err
 	}
 
 	imagen, err := i.Repo.GetImagen(uint(idInt))
+	if err != nil {
+		return err
+	}
 
 	err = i.Repo.EliminarImagen(uint(idInt))
 	if err != nil {
-		return "", err
+		return err
 	}
 
-	return fmt.Sprintf("path/carpeta/inmuebleImagenes\\%s", imagen.PathLocal), err
+	if err := os.Remove(imagen.PathLocal); err != nil {
+		return err
+	}
+
+	return nil
 
 }
 

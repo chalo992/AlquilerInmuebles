@@ -1,10 +1,10 @@
 package credenciales
 
 import (
+	api "AlquilerInmuebles/cmd/api/common"
 	"AlquilerInmuebles/internal/domain"
 	"AlquilerInmuebles/internal/services/common"
 	"fmt"
-	"os"
 	"time"
 
 	"github.com/golang-jwt/jwt/v4"
@@ -33,7 +33,7 @@ func (s *ServiceCredenciales) GenerarToken(usuario domain.Usuario) (string, erro
 		"exp": time.Now().Add(time.Hour * 24).Unix(),
 	})
 
-	tokenString, err := token.SignedString([]byte(os.Getenv("SECRET")))
+	tokenString, err := token.SignedString([]byte(api.Secret))
 	if err != nil {
 		fmt.Println(err)
 		return "", domain.ErrorCrearToken()

@@ -5,6 +5,7 @@ import (
 	"AlquilerInmuebles/internal/services/common"
 	"fmt"
 	"mime/multipart"
+	"os"
 	"path/filepath"
 	"strconv"
 	"time"
@@ -63,7 +64,11 @@ func (r *ServiceReserva) GenerarPathImagenInquilino(file *multipart.FileHeader) 
 	timestamp := time.Now().Format("20060102150405")
 	imagenName := fmt.Sprintf("%s_%s", timestamp, file.Filename)
 
-	saveDir := filepath.Join("path/carpeta/inquilinoImagenes", "imagenInquilinos")
+	saveDir := "imagenInquilinos"
+
+	if err := os.MkdirAll(saveDir, os.ModePerm); err != nil {
+		return "", "", err
+	}
 
 	// Construir path completo donde se va a guardar
 	savePath := filepath.Join(saveDir, imagenName)

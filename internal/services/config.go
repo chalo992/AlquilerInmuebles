@@ -7,8 +7,8 @@ import (
 	"github.com/joho/godotenv"
 )
 
-var BaseUrl string
 var MailSender domain.MailSender
+var BaseUrl string
 
 func GetConfigService() {
 
@@ -17,10 +17,10 @@ func GetConfigService() {
 		panic(err)
 	}
 
-	BaseUrl = os.Getenv("BASE_URL")
 	MailSender.Host = os.Getenv("EMAIL_HOST")
 	MailSender.Port = os.Getenv("EMAIL_PORT")
 	MailSender.Username = os.Getenv("EMAIL_USERNAME")
 	MailSender.Password = os.Getenv("EMAIL_PASSWORD")
+	BaseUrl = os.Getenv("BASE_URL")
 
 }

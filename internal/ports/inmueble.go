@@ -16,7 +16,7 @@ type InmuebleService interface {
 	BuscarInmuebleLocalidadYFechas(localidad, fechaIni, fechaFin string) ([]domain.Inmueble, error)
 	CargarImagenInmueble(imagenName, idInmueble string) error
 	GenerarPathImagen(file *multipart.FileHeader) (string, string, error)
-	EliminarImagen(id string) (string, error)
+	EliminarImagen(id string) error
 	InmueblesPorEncargado(id uint) ([]domain.Inmueble, error)
 	RegistrarCheckOut(id, estado string) error
 }

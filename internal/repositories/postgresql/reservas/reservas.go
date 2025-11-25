@@ -46,13 +46,13 @@ func (db *Repository) ConfirmarReserva(reserva domain.Reserva) error {
 
 func (db *Repository) ReservasDelUsuario(id uint) ([]domain.Reserva, error) {
 
-	var reservas = new([]domain.Reserva)
+	var reservas []domain.Reserva
 
 	if err := db.DataBase.Where("id_usuario_reserva = ?", id).Find(&reservas).Error; err != nil {
 		return nil, err
 	}
 
-	return *reservas, nil
+	return reservas, nil
 }
 
 func (db *Repository) GetReserva(id uint) (*domain.Reserva, error) {
